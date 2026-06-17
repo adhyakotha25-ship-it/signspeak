@@ -1355,7 +1355,12 @@ function renderBSLGuide(query = '', category = '') {
     const scope = TWO_HAND_BADGE_WORDS.has(item.word)
       ? '<span class="bsl-hand-scope">Often two hands or uses the body</span>'
       : '';
+    const hasExtraSteps = steps.length > 0
+      && !(steps.length === 1 && steps[0].trim() === item.tip.trim());
     const stepList = steps.map(s => `<li>${escHtml(s)}</li>`).join('');
+    const stepsBlock = hasExtraSteps
+      ? `<details class="bsl-steps-toggle"><summary>How to sign</summary><ol class="bsl-steps">${stepList}</ol></details>`
+      : '';
     return `
       <article class="bsl-word-card${isDetectable ? ' detectable' : ''}">
         <div class="bsl-word-head">
@@ -1365,7 +1370,7 @@ function renderBSLGuide(query = '', category = '') {
         <div class="bsl-motion-demo bsl-motion-demo--${demo}" aria-hidden="true" title="Motion hint"></div>
         ${scope ? `<div class="bsl-scope-row">${scope}</div>` : ''}
         <p class="bsl-word-tip">${escHtml(item.tip)}</p>
-        <ol class="bsl-steps">${stepList}</ol>
+        ${stepsBlock}
       </article>
     `;
   }).join('');
