@@ -22,16 +22,17 @@ const CONFIG = {
   /** Reject ambiguous frames where top classes are too close */
   MIN_SCORE_MARGIN: 0.13,
   /** Rolling frame buffer for temporal smoothing (smaller = snappier) */
-  PREDICTION_WINDOW_SIZE: 7,
-  /** Majority threshold: this fraction of buffered frames must agree */
+  PREDICTION_WINDOW_SIZE: 5,
+  /** Majority threshold: this fraction of buffered frames must agree
+   *  (3 of 5 frames at 0.55). */
   MAJORITY_RATIO: 0.55,
-  /** Pose must stay stable for this long before commit */
-  GESTURE_HOLD_MS: 240,
+  /** Pose must stay stable for this long before commit (snappy) */
+  GESTURE_HOLD_MS: 170,
   /** Ignore predictions when average keypoint velocity is high.
-   *  Raised so genuine wave signs (hello/goodbye) can still buffer. */
-  MOTION_VELOCITY_THRESHOLD: 4.2,
+   *  Generous so genuine wave signs (hello/goodbye) still buffer. */
+  MOTION_VELOCITY_THRESHOLD: 4.5,
   /** Cooldown after commit to prevent double-firing */
-  COOLDOWN_MS: 750,
+  COOLDOWN_MS: 650,
   /** Canvas rendering */
   LANDMARK_COLOR:  '#6D28D9',
   CONNECTOR_COLOR: 'rgba(109,40,217,0.5)',
@@ -497,12 +498,6 @@ function classifyBSLWordBothHands(rawLeft, rawRight, faceLm, poseLm) {
   const wristAtChest    = wy >= chinAnchor + faceH * 0.5;
   const handOffCentre   = !nearFaceCenter && wy >= foreheadAnchor + faceH * 0.3 && wy < chinAnchor + faceH * 1.2;
 
-  // Specific contact tests (used to pick between similar signs).
-  const fingersAtForehead = (fyTip < foreheadAnchor + faceH * 0.4) && nearFaceCenter;
-  const thumbAtForehead   = nearForeheadByFace || ((tyTip < foreheadAnchor + faceH * 0.3) && nearFaceCenter);
-  const fingersAtChin     = ((fyTip >= chinAnchor - faceH * 0.3) && (fyTip < chinAnchor + faceH * 0.5)) && nearFaceCenter;
-  const thumbAtChin       = veryNearChinByFace || ((tyTip >= chinAnchor - faceH * 0.25) && (tyTip < chinAnchor + faceH * 0.35) && nearFaceCenter);
-
   // Handshape signatures. With the new orientation-invariant finger test we
   // allow a small amount of slack (3-of-4 fingers extended is still "open palm")
   // so a single mis-detected finger doesn't tank the whole sign.
@@ -531,110 +526,98 @@ function classifyBSLWordBothHands(rawLeft, rawRight, faceLm, poseLm) {
   const handAtMouth    = veryNearChinByFace || nearMouthByFingers
                          || (wristAtChin && nearFaceCenter);
 
-  // ── Relative-dominance contact tests ─────────────────────────
-  // For hello/father (forehead) and thank-you/mother (chin) the signs are
-  // *identical* except for whether fingertips or thumb-pad contacts the
-  // face. Pick whichever contact is *closer* to the anchor.
-  const distThumbToChin       = chinLm     ? dist2d(thumbTipRaw,  chinLm)     : Infinity;
-  const distFingersToChin     = chinLm     ? dist2d(avgFingerTip, chinLm)     : Infinity;
-  const distThumbToForehead   = foreheadLm ? dist2d(thumbTipRaw,  foreheadLm) : Infinity;
-  const distFingersToForehead = foreheadLm ? dist2d(avgFingerTip, foreheadLm) : Infinity;
+  // ── Proximity-based zones (PRIMARY discriminator) ────────────
+  // We pick zones from the *closest face/pose landmark to the relevant
+  // part of the hand*, not from wrist-Y bands. This fixes two regressions:
+  //  1) "everything → please": previous rule fired chest whenever the wrist
+  //     was below upper-chest, which is true for almost every hand position.
+  //  2) hello/thank-you not firing when the wrist hangs below the contact
+  //     point.
+  const distThumbToChin        = chinLm      ? dist2d(thumbTipRaw,  chinLm)      : Infinity;
+  const distFingersToChin      = chinLm      ? dist2d(avgFingerTip, chinLm)      : Infinity;
+  const distThumbToForehead    = foreheadLm  ? dist2d(thumbTipRaw,  foreheadLm)  : Infinity;
+  const distFingersToForehead  = foreheadLm  ? dist2d(avgFingerTip, foreheadLm)  : Infinity;
+  const distWristToChest       = chestCenter ? dist2d(wristRaw,     chestCenter) : Infinity;
+  const distFingersToChest     = chestCenter ? dist2d(avgFingerTip, chestCenter) : Infinity;
 
-  // ── Wrist-Y based zones (PRIMARY zone discriminator) ─────────
-  // Critical: zone is decided by WRIST Y, not fingertip proximity. An open
-  // palm on the chest with fingers pointing up has its fingertips very
-  // close to the chin landmark — using fingertip distance for zoning
-  // wrongly labels that "at chin" and blocks please/sorry.
-  const wristZoneIsForehead = wy < foreheadAnchor + faceH * 0.5;
-  const wristZoneIsChin     = wy >= foreheadAnchor + faceH * 0.5 && wy < chinAnchor + faceH * 0.45;
-  const wristZoneIsChest    = wy >= chinAnchor + faceH * 0.45;
+  // Pinch point (centre of index/thumb tips) — used by EAT/DRINK so we
+  // measure where the *contact* actually is, not the curled fingers' avg.
+  const pinchPoint = { x: (indexTipRaw.x + thumbTipRaw.x) / 2,
+                       y: (indexTipRaw.y + thumbTipRaw.y) / 2 };
+  const distPinchToChin = chinLm ? dist2d(pinchPoint, chinLm) : Infinity;
 
-  // Pose-based chest indicator (most reliable when pose landmarks present).
-  const handOnChest = nearChest
-    || (chestCenter && wy >= chestCenter.y - 0.06)
-    || (!chestCenter && wristZoneIsChest);
+  // Tight contact gates — only fire when the part of the hand is genuinely
+  // near the anchor (not a generous Y-band).
+  const fingersAtForehead = distFingersToForehead < 0.13;
+  const fingersAtChin     = distFingersToChin     < 0.11;
+  const thumbAtForehead   = distThumbToForehead   < 0.12;
+  const thumbAtChin       = distThumbToChin       < 0.10;
+  const wristOnChest      = distWristToChest      < 0.18;
+  const pinchAtMouth      = distPinchToChin       < 0.12;
 
-  // Face-zone gates: require the WRIST to actually be at that zone *and*
-  // some part of the hand near the corresponding face landmark.
-  const openPalmAtChinZone = wristZoneIsChin
-    && nearFaceCenter
-    && (nearChinByFingers || veryNearChinByFace);
-  const openPalmAtForeheadZone = wristZoneIsForehead
-    && (nearForeheadByFingers || nearForeheadByFace || nearHeadByPose || nearFaceCenter);
+  // Mutex: a hand "on chest" must also be clearly below the face landmarks.
+  //   Without this, a low wrist with fingertips up at the chin can sometimes
+  //   satisfy both wristOnChest AND fingersAtChin (overlap zone).
+  const handClearlyOnChest = wristOnChest && !fingersAtForehead && !fingersAtChin;
 
-  // Strict thumb-dominance margin: father/mother only fire when the thumb
-  // is *clearly* closer to the anchor than the fingertips. Otherwise the
-  // default (hello/thank-you) wins. Without this margin, a saluting wave
-  // could land in a tie and both signs would collapse to 0.1.
-  const THUMB_DOMINANCE_MARGIN = 0.03;
-  const thumbClearlyAtForehead = distThumbToForehead < distFingersToForehead - THUMB_DOMINANCE_MARGIN
-                                  && nearForeheadByFace;
-  const thumbClearlyAtChin     = distThumbToChin     < distFingersToChin     - THUMB_DOMINANCE_MARGIN
-                                  && veryNearChinByFace;
-
-  // HELLO — open palm at brow. Default winner unless thumb clearly dominates.
+  // HELLO — fingertips reach the forehead, thumb does NOT lead.
   scores.hello = (
-    openPalm && openPalmAtForeheadZone && !thumbClearlyAtForehead
-  ) ? 0.88 : 0.1;
+    openPalm && fingersAtForehead && !thumbAtForehead
+  ) ? 0.90 : 0.1;
 
-  // FATHER — open-B hand, thumb pad pressed against the forehead.
+  // FATHER — thumb pad pressed against the forehead.
   scores.father = (
-    openPalm && openPalmAtForeheadZone && thumbClearlyAtForehead
+    openPalm && thumbAtForehead
   ) ? 0.92 : 0.1;
 
-  // THANK YOU — open palm fingertips at chin. Default winner at the chin zone.
+  // THANK YOU — fingertips reach the chin, thumb does NOT lead.
   scores['thank you'] = (
-    openPalm && openPalmAtChinZone && !thumbClearlyAtChin
-  ) ? 0.88 : 0.1;
+    openPalm && fingersAtChin && !thumbAtChin && !handClearlyOnChest
+  ) ? 0.90 : 0.1;
 
-  // MOTHER — open-B hand, thumb pad at chin.
+  // MOTHER — thumb pad at the chin.
   scores.mother = (
-    openPalm && openPalmAtChinZone && thumbClearlyAtChin
+    openPalm && thumbAtChin && !handClearlyOnChest
   ) ? 0.92 : 0.1;
 
-  // GOODBYE — open palm beside the head/shoulder (the "wave" gesture).
-  // Relaxed from strict handOffCentre: it's enough that the palm is not
-  // pressed against the face zone and the hand is in upper-body range.
-  const handBesideFace = palmCenter.x < 0.32 || palmCenter.x > 0.68;
+  // GOODBYE — open palm waving beside the head/shoulder.
+  const handBesideFace = palmCenter.x < 0.34 || palmCenter.x > 0.66;
   const inWaveBand     = wy >= foreheadAnchor && wy < chinAnchor + faceH * 1.3;
   scores.goodbye = (
     openPalm
     && inWaveBand
-    && (handBesideFace || handOffCentre)
-    && !inChinArea
-    && !nearForeheadByFingers   // avoid stealing hello frames
-    && !nearForeheadByFace
-  ) ? 0.84 : 0.1;
+    && handBesideFace
+    && !fingersAtChin
+    && !fingersAtForehead
+  ) ? 0.86 : 0.1;
 
-  // YES — closed fist with thumb extended along the side (nodding motion).
-  // Bumped 0.80 → 0.86 so the margin over any neighbour (e.g. help) stays
-  // well above MIN_SCORE_MARGIN.
-  scores.yes = thumbsUp ? 0.86 : 0.1;
+  // YES — closed fist with thumb up.
+  scores.yes = thumbsUp ? 0.88 : 0.1;
 
-  // NO — index + middle extended, tip pinches thumb.
-  scores.no = (twoFinger && close(lm[8], lm[4], 0.32)) ? 0.84 : 0.1;
+  // NO — index + middle extended, tips pinch thumb.
+  scores.no = (twoFinger && close(lm[8], lm[4], 0.32)) ? 0.86 : 0.1;
 
-  // PLEASE — open palm on the chest. Zoning is wrist-based so an open palm
-  // at chest (fingers pointing up) no longer gets falsely flagged as "near
-  // chin" via fingertip proximity.
+  // PLEASE — open palm on the chest. Strict: wrist must be near the chest
+  // landmark AND fingertips must NOT be near the face. Prevents stealing
+  // hello/thank-you frames.
   scores.please = (
-    openPalm && handOnChest && !pinch
+    openPalm && handClearlyOnChest && !pinch
   ) ? 0.88 : 0.1;
 
   // SORRY — closed fist on the chest.
   scores.sorry = (
-    fist && handOnChest
+    fist && handClearlyOnChest
   ) ? 0.90 : 0.1;
 
-  // EAT — pinch shape near mouth. Wrist must be at chin level (not chest).
+  // EAT — pinch handshape, contact point at the mouth.
   scores.eat = (
-    pinch && wristZoneIsChin && nearFaceCenter && !openPalm
-  ) ? 0.86 : 0.1;
+    pinch && pinchAtMouth && !openPalm
+  ) ? 0.88 : 0.1;
 
-  // DRINK — C-hand near mouth.
+  // DRINK — C-hand near the mouth.
   scores.drink = (
-    cHand && wristZoneIsChin && nearFaceCenter
-  ) ? 0.82 : 0.1;
+    cHand && distFingersToChin < 0.14
+  ) ? 0.84 : 0.1;
 
   // ── Two-hand signs (only score high if both hands are actually visible) ──
   // HELP: one hand (thumb-up fist) rests on a flat palm and lifts.
@@ -1868,15 +1851,17 @@ function initMediaPipe() {
 
   state.tracker = tracker;
 
-  // Use MediaPipe Camera utils to drive frame capture
+  // Use MediaPipe Camera utils to drive frame capture.
+  // 640x480 is the sweet spot for Holistic at modelComplexity:0 — gives
+  // ~25–30fps on mid-range laptops while landmarks remain accurate.
   const mpCamera = new Camera(video, {
     onFrame: async () => {
       if (state.tracker) {
         await state.tracker.send({ image: video });
       }
     },
-    width: 960,
-    height: 540,
+    width: 640,
+    height: 480,
   });
   state.mpCamera = mpCamera;
   mpCamera.start();
