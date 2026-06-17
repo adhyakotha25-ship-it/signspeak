@@ -134,8 +134,10 @@ body {
   max-width: 1640px; margin: 0 auto;
   padding: 80px 24px 40px;
   display: grid;
-  /* Layout: BSL Guide (left) | Camera (centre, widest) | Output (right). */
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.5fr) 360px;
+  /* Layout: BSL Guide (left, min 300px so cards aren't crushed)
+     | Camera (centre, widest)
+     | Output (right, fixed). */
+  grid-template-columns: minmax(300px, 1.1fr) minmax(0, 1.45fr) 360px;
   gap: 18px;
   min-height: 100vh;
   align-items: start;
@@ -520,10 +522,9 @@ body {
 
 .bsl-guide-grid {
   display: grid;
-  /* Single wide card per row in the narrow left column; two columns only
-     when the panel itself is generous (>600px). Wider cards = readable
-     step text without awkward wrapping. */
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  /* Lower minimum (220 px) so cards always fit the column even on narrow
+     viewports — no horizontal overflow that visually crushes content. */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 12px;
   max-height: 520px;
   overflow-y: auto;
@@ -543,10 +544,14 @@ body {
 .bsl-live-only input { accent-color: var(--cyan); margin: 0; }
 .bsl-word-card {
   background: var(--bg-2); border: 1px solid var(--border);
-  border-radius: var(--r-sm); padding: 12px 13px;
-  display: flex; flex-direction: column; gap: 6px;
-  min-height: 0; cursor: default;
-  overflow: hidden;   /* never let inner content bleed out of the card */
+  border-radius: var(--r-sm); padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 7px;
+  /* Explicit minimum so cards never collapse to a single line when the
+     grid is constrained — every sign card shows name, motion preview,
+     tip, and the "How to sign" disclosure. */
+  min-height: 150px;
+  cursor: default;
+  word-break: break-word;
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 .bsl-word-card:hover {
