@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SignSpeak — BSL Practice Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg-blob blob-1"></div>
+  <div class="bg-blob blob-2"></div>
+  <div class="bg-blob blob-3"></div>
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+            <path d="M14 3C8.477 3 4 7.477 4 13v6a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5v-6c0-5.523-4.477-10-10-10Z" fill="url(#grad1)"/>
+            <path d="M10 11.5c0-.828.672-1.5 1.5-1.5s1.5.672 1.5 1.5v4c0 .828-.672 1.5-1.5 1.5S10 16.328 10 15.5v-4Z" fill="white" opacity="0.9"/>
+            <path d="M14 10c0-.828.672-1.5 1.5-1.5S17 9.172 17 10v5.5c0 .828-.672 1.5-1.5 1.5S14 16.328 14 15.5V10Z" fill="white" opacity="0.9"/>
+            <path d="M7 13c0-.828.672-1.5 1.5-1.5S10 12.172 10 13v3c0 .828-.672 1.5-1.5 1.5S7 16.828 7 16v-3Z" fill="white" opacity="0.7"/>
+            <path d="M17 11.5c0-.828.672-1.5 1.5-1.5s1.5.672 1.5 1.5v3.5c0 .828-.672 1.5-1.5 1.5s-1.5-.672-1.5-1.5V11.5Z" fill="white" opacity="0.7"/>
+            <defs>
+              <linearGradient id="grad1" x1="4" y1="3" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#5B21B6"/>
+                <stop offset="1" stop-color="#06B6D4"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="logo-text">SignSpeak</span>
+        <span class="logo-badge">BSL</span>
+      </div>
+      <nav class="header-nav">
+        <button class="nav-btn" id="btn-how-it-works">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          How it works
+        </button>
+        <button class="nav-btn" id="btn-privacy">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Privacy
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-container">
+
+    <!-- LEFT: Camera + Sentence -->
+    <section class="camera-panel">
+      <div class="camera-wrapper">
+        <div class="camera-frame" id="camera-frame">
+          <div class="camera-placeholder" id="camera-placeholder">
+            <div class="placeholder-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+              </svg>
+            </div>
+            <h3>Enable Camera</h3>
+            <p>SignSpeak uses your webcam to detect BSL signs in real-time. Everything is processed locally — no data leaves your device.</p>
+            <button class="btn-start" id="btn-start-camera">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16 10,8"/></svg>
+              Start Camera
+            </button>
+          </div>
+
+          <video id="video" autoplay playsinline muted style="display:none;"></video>
+          <canvas id="canvas" style="display:none;"></canvas>
+
+          <div class="camera-hud" id="camera-hud" style="display:none;">
+            <div class="hud-top">
+              <div class="hud-status">
+                <span class="status-dot live"></span>
+                <span>LIVE</span>
+              </div>
+              <div class="hud-fps" id="hud-fps">-- fps</div>
+            </div>
+            <div class="hud-bottom">
+              <div class="hud-hand-info" id="hud-hand-info">Scanning for hand...</div>
+            </div>
+          </div>
+
+          <div class="detection-badge" id="detection-badge" style="display:none;">
+            <span id="detection-letter">--</span>
+          </div>
+        </div>
+
+        <div class="camera-controls" id="camera-controls" style="display:none;">
+          <button class="ctrl-btn" id="btn-flip-camera" title="Flip camera">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+            Flip
+          </button>
+          <button class="ctrl-btn" id="btn-toggle-landmarks" title="Toggle hand skeleton" data-active="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a2 2 0 0 1 2 2v6a2 2 0 0 1-4 0V4a2 2 0 0 1 2-2z"/><path d="M18 6a2 2 0 0 1 2 2v4a2 2 0 0 1-4 0V8a2 2 0 0 1 2-2z"/><path d="M6 6a2 2 0 0 1 2 2v4a2 2 0 0 1-4 0V8a2 2 0 0 1 2-2z"/></svg>
+            Skeleton
+          </button>
+          <button class="ctrl-btn danger" id="btn-stop-camera" title="Stop camera">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+            Stop
+          </button>
+        </div>
+      </div>
+
+      <!-- Sentence Builder -->
+      <div class="panel-card sentence-card">
+        <div class="card-header">
+          <div class="card-header-left">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span class="card-label">Sentence Builder</span>
+          </div>
+          <div class="sentence-controls">
+            <button class="icon-btn" id="btn-speak" title="Read aloud">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              Speak
+            </button>
+            <button class="icon-btn danger" id="btn-clear-sentence" title="Clear sentence">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+              Clear
+            </button>
+          </div>
+        </div>
+        <div class="sentence-display" id="sentence-display">
+          <span class="sentence-placeholder">Detected words will build your sentence here...</span>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-pill">
+          <span class="stat-pill-val" id="stat-letters">0</span>
+          <span class="stat-pill-label">Detections</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-pill-val" id="stat-words">0</span>
+          <span class="stat-pill-label">Words</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-pill-val" id="stat-accuracy">--%</span>
+          <span class="stat-pill-label">Avg Conf.</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-pill-val" id="stat-time">0:00</span>
+          <span class="stat-pill-label">Session</span>
+        </div>
+        <button class="stat-reset-btn" id="btn-reset-stats">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+          Reset
+        </button>
+      </div>
+
+      <!-- Live Detection Cheatsheet -->
+      <div class="panel-card cheatsheet-card">
+        <div class="card-header">
+          <div class="card-header-left">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <span class="card-label">Live Sign Cheatsheet</span>
+          </div>
+          <button class="icon-btn" id="cheat-toggle" title="Show / hide" aria-expanded="true">
+            <svg id="cheat-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+        <div class="cheat-body" id="cheat-body">
+          <p class="cheat-intro">Each row shows the <strong>zone</strong>, a <strong>motion preview</strong>, and what the detector looks for. Hit the zone, hold the shape, hold steady.</p>
+          <div class="cheat-grid" id="cheat-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MIDDLE: Always-visible BSL Guide (next to the camera) -->
+    <section class="guide-panel">
+      <div class="panel-card bsl-guide-card">
+        <div class="card-header">
+          <div class="card-header-left">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span class="card-label">BSL Word Guide</span>
+          </div>
+          <span class="bsl-count-badge" id="bsl-count">90 signs</span>
+        </div>
+
+        <div class="bsl-toolbar">
+          <div class="bsl-search-wrap">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input id="bsl-search" class="bsl-search" type="text" placeholder="Search word or category..." autocomplete="off" />
+            <button class="bsl-clear-btn" id="bsl-search-clear" style="display:none;">✕</button>
+          </div>
+          <div class="category-chips" id="category-chips">
+            <button class="cat-chip active" data-cat="">All</button>
+            <button class="cat-chip" data-cat="greetings">Greetings</button>
+            <button class="cat-chip" data-cat="manners">Manners</button>
+            <button class="cat-chip" data-cat="needs">Needs</button>
+            <button class="cat-chip" data-cat="daily life">Daily Life</button>
+            <button class="cat-chip" data-cat="people">People</button>
+            <button class="cat-chip" data-cat="questions">Questions</button>
+            <button class="cat-chip" data-cat="verbs">Verbs</button>
+            <button class="cat-chip" data-cat="feelings">Feelings</button>
+            <button class="cat-chip" data-cat="descriptions">Descriptions</button>
+            <button class="cat-chip" data-cat="time">Time</button>
+            <button class="cat-chip" data-cat="colors">Colours</button>
+          </div>
+          <label class="bsl-live-only">
+            <input type="checkbox" id="bsl-live-only" />
+            <span>Show only live-detected</span>
+          </label>
+        </div>
+
+        <div class="bsl-guide-grid" id="bsl-guide-grid"></div>
+        <div class="bsl-empty" id="bsl-empty" style="display:none;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <p>No signs found. Try a different search or category.</p>
+        </div>
+        <div class="bsl-footer">Tips default to right-hand dominant signing; mirror if you sign left-handed. Animated strip = rough motion hint only.</div>
+      </div>
+    </section>
+
+    <!-- RIGHT: Tabbed Output Panel -->
+    <section class="output-panel">
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="detect">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Detector
+        </button>
+        <button class="tab-btn" data-tab="debug">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Debug
+        </button>
+      </div>
+
+      <!-- Detector Tab -->
+      <div class="tab-pane active" id="tab-detect">
+        <div class="panel-card detection-card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span class="card-label">Live Detection</span>
+            </div>
+            <div class="confidence-label" id="confidence-label">Confidence: --</div>
+          </div>
+          <div class="current-letter-display">
+            <div class="big-letter" id="big-letter">--</div>
+            <div class="confidence-bar-track">
+              <div class="confidence-bar-fill" id="confidence-bar"></div>
+            </div>
+            <div class="letter-description" id="letter-description">Point your hand at the camera to detect a word</div>
+          </div>
+        </div>
+
+        <div class="panel-card word-card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span class="card-label">Word Log</span>
+            </div>
+            <button class="icon-btn danger" id="btn-clear-word" title="Clear log">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+            </button>
+          </div>
+          <div class="word-display" id="word-display">
+            <span class="word-placeholder">Detected words will appear here...</span>
+          </div>
+          <div class="hold-row">
+            <div class="debounce-bar-track">
+              <div class="debounce-bar-fill" id="debounce-bar"></div>
+            </div>
+            <span class="debounce-hint">Hold steady to confirm</span>
+          </div>
+        </div>
+
+        <!-- Detectable signs chip panel -->
+        <div class="panel-card detectable-card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <span class="card-label">Detectable Signs</span>
+            </div>
+            <span class="chip-count" id="detectable-chip-count">18 words</span>
+          </div>
+          <div class="detectable-chips" id="detectable-chips"></div>
+          <p class="detectable-hint">These signs can be detected live (including two-hand signs as one gesture). Open the BSL Guide for motion hints and step-by-step tips.</p>
+        </div>
+      </div>
+
+      <!-- Debug Tab -->
+      <div class="tab-pane" id="tab-debug">
+        <div class="panel-card debug-card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              <span class="card-label">Detection Debug</span>
+            </div>
+            <span class="debug-live-dot"></span>
+          </div>
+          <div class="debug-grid">
+            <div class="debug-item">
+              <span class="debug-key">Motion Velocity</span>
+              <span class="debug-value" id="debug-velocity">0.00</span>
+              <span class="debug-sub">lower = steadier hand</span>
+            </div>
+            <div class="debug-item">
+              <span class="debug-key">Vote Ratio</span>
+              <span class="debug-value" id="debug-vote">0%</span>
+              <span class="debug-sub">need ~58% of recent frames</span>
+            </div>
+            <div class="debug-item">
+              <span class="debug-key">Hold Progress</span>
+              <span class="debug-value" id="debug-hold">0%</span>
+              <span class="debug-sub">need 100% to commit</span>
+            </div>
+            <div class="debug-item">
+              <span class="debug-key">Cooldown</span>
+              <span class="debug-value" id="debug-cooldown">ready</span>
+              <span class="debug-sub">1s pause after each word</span>
+            </div>
+          </div>
+          <div class="debug-tips">
+            <div class="debug-tip">💡 If velocity stays high, ensure good lighting and hold your hand still.</div>
+            <div class="debug-tip">💡 Stay within 60–180 cm of the camera. Centre your hand in frame.</div>
+            <div class="debug-tip">💡 The vote buffer is 12 frames; about 7 matching frames are needed before the hold timer can finish.</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Modals -->
+  <div class="modal-overlay" id="modal-hiw" style="display:none;">
+    <div class="modal">
+      <button class="modal-close" data-modal="modal-hiw">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <h2>How SignSpeak Works</h2>
+      <div class="modal-steps">
+        <div class="modal-step"><div class="step-num">1</div><div><strong>Hand & Body Detection</strong><p>MediaPipe Holistic tracks your face, pose, and 21 hand landmarks per hand in real-time.</p></div></div>
+        <div class="modal-step"><div class="step-num">2</div><div><strong>Feature Extraction</strong><p>Face, pose, and hand landmarks combine so signs referencing body regions (chin, forehead, chest) work reliably.</p></div></div>
+        <div class="modal-step"><div class="step-num">3</div><div><strong>Heuristic Classification</strong><p>A rule-based classifier scores one whole gesture per frame using both hands plus face and upper-body pose when visible. 18 common BSL words are supported for live detection.</p></div></div>
+        <div class="modal-step"><div class="step-num">4</div><div><strong>Temporal Smoothing</strong><p>A rolling 12-frame vote and a short stability hold prevent accidental detections. Hold your sign steady until the bar fills.</p></div></div>
+        <div class="modal-step"><div class="step-num">5</div><div><strong>100% On-Device</strong><p>All processing is in your browser via WebGL. No video or data ever leaves your device.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-privacy" style="display:none;">
+    <div class="modal">
+      <button class="modal-close" data-modal="modal-privacy">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <h2>Privacy Notice</h2>
+      <div class="privacy-list">
+        <div class="privacy-item"><div class="privacy-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><div><strong>Local Processing Only</strong><p>All video frames are processed in your browser using WebGL. Nothing is transmitted to any server.</p></div></div>
+        <div class="privacy-item"><div class="privacy-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><div><strong>No Data Storage</strong><p>No personal data, camera frames, or biometric information is stored or logged.</p></div></div>
+        <div class="privacy-item"><div class="privacy-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><div><strong>Explicit Consent</strong><p>Camera only activates when you click Start, and stops immediately when you click Stop.</p></div></div>
+        <div class="privacy-item"><div class="privacy-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><div><strong>GDPR Compliant</strong><p>No personal data is collected beyond what is strictly necessary for in-browser functionality.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js" crossorigin="anonymous"></script>
+  <script src="app.js"></script>
+</body>
+</html>
