@@ -134,8 +134,8 @@ body {
   max-width: 1640px; margin: 0 auto;
   padding: 80px 24px 40px;
   display: grid;
-  /* Give the middle BSL guide column extra room so cards aren't crushed. */
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr) 360px;
+  /* Layout: BSL Guide (left) | Camera (centre, widest) | Output (right). */
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.5fr) 360px;
   gap: 18px;
   min-height: 100vh;
   align-items: start;
@@ -520,9 +520,10 @@ body {
 
 .bsl-guide-grid {
   display: grid;
-  /* Wider minimum so the steps/tip text doesn't get crushed into an
-     unreadable wall. Falls back to a single column on narrow viewports. */
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  /* Single wide card per row in the narrow left column; two columns only
+     when the panel itself is generous (>600px). Wider cards = readable
+     step text without awkward wrapping. */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 12px;
   max-height: 520px;
   overflow-y: auto;
@@ -950,11 +951,11 @@ body {
 /* ── Responsive ── */
 @media (max-width: 1280px) {
   .main-container {
-    /* Give the guide column more room so the cards in the BSL Word Guide
-       are wide enough for the tip text not to wrap into mush. */
-    grid-template-columns: minmax(0, 1fr) minmax(360px, 1fr);
+    /* Guide left, camera centre/right, output below. Camera column gets
+       extra weight so the video preview stays large. */
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr);
     grid-template-areas:
-      "camera guide"
+      "guide camera"
       "output output";
   }
   .camera-panel { grid-area: camera; }
