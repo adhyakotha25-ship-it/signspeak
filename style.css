@@ -134,7 +134,8 @@ body {
   max-width: 1640px; margin: 0 auto;
   padding: 80px 24px 40px;
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) 360px;
+  /* Give the middle BSL guide column extra room so cards aren't crushed. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr) 360px;
   gap: 18px;
   min-height: 100vh;
   align-items: start;
@@ -519,11 +520,13 @@ body {
 
 .bsl-guide-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 10px;
+  /* Wider minimum so the steps/tip text doesn't get crushed into an
+     unreadable wall. Falls back to a single column on narrow viewports. */
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px;
   max-height: 520px;
   overflow-y: auto;
-  padding-right: 4px;
+  padding-right: 6px;
 }
 
 .bsl-live-only {
@@ -539,9 +542,10 @@ body {
 .bsl-live-only input { accent-color: var(--cyan); margin: 0; }
 .bsl-word-card {
   background: var(--bg-2); border: 1px solid var(--border);
-  border-radius: var(--r-sm); padding: 10px 12px;
-  display: flex; flex-direction: column; gap: 4px;
+  border-radius: var(--r-sm); padding: 12px 13px;
+  display: flex; flex-direction: column; gap: 6px;
   min-height: 0; cursor: default;
+  overflow: hidden;   /* never let inner content bleed out of the card */
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 .bsl-word-card:hover {
@@ -797,12 +801,51 @@ body {
   animation: bslBreathe 2.5s ease-in-out infinite;
 }
 
-.bsl-steps {
+/* ── Steps disclosure (collapsed by default for a clean card) ── */
+.bsl-steps-toggle {
   margin: 0;
-  padding-left: 1.05rem;
+  padding: 0;
+}
+.bsl-steps-toggle > summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cyan-l);
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(6,182,212,0.25);
+  background: rgba(6,182,212,0.06);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: max-content;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  user-select: none;
+}
+.bsl-steps-toggle > summary::-webkit-details-marker { display: none; }
+.bsl-steps-toggle > summary::before {
+  content: '▸';
+  display: inline-block;
   font-size: 0.7rem;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+.bsl-steps-toggle[open] > summary::before { transform: rotate(90deg); }
+.bsl-steps-toggle > summary:hover {
+  background: rgba(6,182,212,0.12);
+  border-color: rgba(6,182,212,0.4);
+  color: var(--text-1);
+}
+
+.bsl-steps {
+  margin: 6px 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.72rem;
   color: var(--text-2);
-  line-height: 1.45;
+  line-height: 1.5;
 }
 .bsl-steps li { margin: 4px 0; }
 .bsl-steps li::marker { color: var(--cyan); font-weight: 700; }
@@ -907,7 +950,9 @@ body {
 /* ── Responsive ── */
 @media (max-width: 1280px) {
   .main-container {
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+    /* Give the guide column more room so the cards in the BSL Word Guide
+       are wide enough for the tip text not to wrap into mush. */
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 1fr);
     grid-template-areas:
       "camera guide"
       "output output";
