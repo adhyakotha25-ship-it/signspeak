@@ -1210,77 +1210,432 @@ function escHtml(text) {
 
 /** Clearer step-by-step copy for live-detected signs; others fall back to `guideStepsFor`. */
 const BSL_GUIDE_STEPS = {
+  // ── Greetings ──────────────────────────────────────────────
   hello: [
     'Dominant hand flat, fingers together, palm sideways toward the viewer.',
-    'Brush fingertips at your brow, then move the hand smoothly outward—small arc, not a big wave.',
+    'Brush fingertips at your brow, then move the hand smoothly outward — small arc, not a big wave.',
   ],
   goodbye: [
     'Open flat hand (fingers together), palm facing out.',
-    'Wave left–right from the wrist at about shoulder height; keep the shape readable.',
+    'Wave left–right from the wrist at about shoulder height; keep the handshape readable.',
   ],
+
+  // ── Manners ────────────────────────────────────────────────
   please: [
     'Flat open hand on the centre of your chest.',
-    'Rub a small circle on the chest a few times (polite, steady pressure).',
+    'Rub a small circle on the chest a few times — steady polite pressure.',
   ],
   'thank you': [
     'Flat fingertips start at your chin, palm toward your face.',
-    'Move the hand forward and slightly down—like blowing a kiss without puckering.',
+    'Move the hand forward and slightly down — like blowing a kiss without puckering.',
   ],
   sorry: [
     'Closed fist on the centre of your chest.',
     'Rub a small circle on the chest with the knuckle side (same region as please, different handshape).',
   ],
   yes: [
-    'Handshape: closed fist with thumb up along the side of the index finger.',
-    'Nod the fist up and down from the wrist in a clear “yes” motion.',
+    'Closed fist with thumb pointing up along the side of the index finger.',
+    'Nod the fist up and down from the wrist in a clear "yes" motion.',
   ],
   no: [
     'Index and middle finger extended together; thumb, ring, and pinky tucked.',
     'Tap the pad of the index finger onto the thumb tip a couple of times.',
   ],
+
+  // ── Needs ──────────────────────────────────────────────────
   help: [
-    'One hand flat, palm up in front of you (the “support”).',
-    'Other hand: fist with thumb pointing up; place it on the palm and lift slightly—like raising a hitch-hike thumb from a shelf.',
-  ],
-  eat: [
-    'Tips of index and thumb pinched together (O-shape).',
-    'Tap the pinch toward your closed lips a few times.',
-  ],
-  drink: [
-    'Form a loose C with dominant hand (thumb and fingers curved).',
-    'Tip the C toward your mouth as if holding a cup.',
-  ],
-  mother: [
-    'Open flat hand, fingers together, thumb extended along the palm edge.',
-    'Touch thumb pad to the side of your chin; small forward tap or hold is enough.',
-  ],
-  father: [
-    'Same open-B handshape as mother.',
-    'Touch thumb pad to mid-forehead; keep elbow relaxed so the sign stays in frame.',
-  ],
-  stop: [
-    'Non-dominant hand flat, palm up in front of torso.',
-    'Dominant flat hand chops once onto the palm (clear stop boundary).',
+    'One hand flat, palm up in front of you (the support).',
+    'Other hand: fist with thumb up. Place it on the palm and lift slightly — like raising a thumbs-up off a shelf.',
   ],
   want: [
     'Both hands open, fingers together, palms facing up in front of you.',
-    'Pull both hands inward toward your chest a few times (whole gesture, not one hand at a time).',
+    'Pull both hands inward toward your chest a couple of times (move them together, not one at a time).',
   ],
-  friend: [
-    'Both hands: index fingers bent into hooks, other fingers tucked.',
-    'Hook tips meet in front of chest; small linking or pulling motion—treat as one paired shape.',
+  need: [
+    'Dominant hand: index finger extended upward, others curled (a "1" handshape).',
+    'Bring the index sharply down and back up twice — short, emphatic motion.',
+  ],
+
+  // ── Daily Life ─────────────────────────────────────────────
+  eat: [
+    'Tips of index and thumb pinched together into an O-shape.',
+    'Tap the pinch lightly toward your closed lips a couple of times.',
+  ],
+  drink: [
+    'Form a loose C with the dominant hand (thumb and fingers curved).',
+    'Tip the C toward your mouth as if holding a cup.',
+  ],
+  toilet: [
+    'Form a "T" handshape (thumb between index and middle, others curled).',
+    'Shake the T-hand briskly left–right twice in front of your body.',
+  ],
+  sleep: [
+    'Open hand in front of your face, fingers spread, palm toward you.',
+    'Slowly close it into a soft flat-O while drawing the hand down past your chin — like eyes closing.',
   ],
   work: [
-    'Both fists in front of torso, knuckles toward each other.',
-    'Short vertical taps together like hammering—wrists stay close so the detector sees one gesture.',
+    'Both fists in front of your torso, knuckles toward each other.',
+    'Short vertical taps together like hammering — keep wrists close so the gesture stays unified.',
   ],
   school: [
     'Both flat hands in front, palms facing each other.',
-    'Bring palms together in a light clap, then separate slightly and repeat once.',
+    'Bring palms together in a light clap, separate slightly, repeat once.',
+  ],
+  home: [
+    'Bunch the fingertips of the dominant hand together into a flat-O.',
+    'Tap the bunched fingertips against your cheek, then move slightly back and tap again.',
+  ],
+  shop: [
+    'Both hands flat, palms together in front of you.',
+    'Flick the dominant hand outward off the non-dominant palm — like handing money out.',
+  ],
+  money: [
+    'Non-dominant hand flat, palm up.',
+    'Dominant hand: pinch fingertips onto the palm, then flick them off the palm sideways — repeat once.',
+  ],
+  phone: [
+    'Make a "Y" handshape (thumb and pinky out, other fingers curled).',
+    'Hold it up to your ear: thumb at the ear, pinky pointing toward your mouth.',
+  ],
+
+  // ── People ─────────────────────────────────────────────────
+  name: [
+    'Both hands: extend index and middle finger together into a "U" shape.',
+    'Cross the dominant U over the non-dominant U at the fingertips and tap twice.',
+  ],
+  my: [
+    'Flat hand, palm facing your chest.',
+    'Place the palm gently on the centre of your chest and hold.',
+  ],
+  your: [
+    'Flat hand, palm facing the person you are addressing.',
+    'Push the palm forward toward them in a small steady motion.',
+  ],
+  me: [
+    'Dominant hand: index finger extended.',
+    'Point clearly at the centre of your own chest once.',
+  ],
+  you: [
+    'Dominant hand: index finger extended.',
+    'Point directly at the person you are addressing.',
+  ],
+  we: [
+    'Make a "W" shape: index, middle and ring fingers extended.',
+    'Tap it on one shoulder, swing it across your body, and tap on the other shoulder.',
+  ],
+  they: [
+    'Index finger extended on the dominant hand, arm out to the side.',
+    'Sweep the index horizontally across the group or area you are referring to.',
+  ],
+  friend: [
+    'Both hands: bend the index fingers into hooks, other fingers tucked.',
+    'Hook tips meet in front of your chest with a small linking or pulling motion — paired shape.',
   ],
   family: [
-    'Both hands in an F-shape (index and thumb extended, others curled).',
-    'Hands close in front of chest; small circular motion as if drawing a ring—move both together.',
+    'Both hands in an "F" shape (index and thumb make a circle, other fingers extended).',
+    'Hands close in front of chest; trace a small circle outward together as if drawing a ring.',
+  ],
+  baby: [
+    'Lay one forearm across the other in front of you, palms up — cradling position.',
+    'Rock them gently left to right twice, like rocking a baby to sleep.',
+  ],
+  mother: [
+    'Open flat hand, fingers together, thumb extended along the palm edge.',
+    'Touch the thumb pad to the side of your chin — small forward tap or hold is enough.',
+  ],
+  father: [
+    'Same open-B handshape as mother.',
+    'Touch the thumb pad to your mid-forehead. Keep the elbow relaxed so the sign stays in frame.',
+  ],
+  sister: [
+    'Dominant fist with the index finger bent into a hook.',
+    'Tap the hooked index twice on the bridge of your nose.',
+  ],
+  brother: [
+    'Dominant fist with the index finger bent into a hook.',
+    'Tap the hooked index twice on your forehead, near the hairline.',
+  ],
+  woman: [
+    'Flat hand, fingers together, palm facing your face.',
+    'Brush the side of the index finger down your cheek from temple to jawline.',
+  ],
+  man: [
+    'Closed fist with the thumb extended upward alongside the index finger.',
+    'Tap the thumb side of the fist on your chin twice.',
+  ],
+  child: [
+    'Flat hand, palm facing down, fingers together.',
+    'Hold the hand at child-height in front of you (waist or hip level) — showing how tall the child is.',
+  ],
+  teacher: [
+    'Both hands flat, fingers together, palms facing forward, near your temples.',
+    'Move them outward and forward at the same time — pushing knowledge out toward the learner.',
+  ],
+  doctor: [
+    'Extend index and middle finger together (a "2" shape).',
+    'Tap the fingertips on the inside of the opposite wrist twice — like taking a pulse.',
+  ],
+  police: [
+    'Curve the dominant hand into a loose "C".',
+    'Tap the C onto your opposite shoulder twice — where a badge would sit.',
+  ],
+
+  // ── Questions (raise eyebrows for all of these) ────────────
+  where: [
+    'Dominant index finger extended upward, palm facing forward.',
+    'Wag the finger side to side a few times in front of you — questioning gesture.',
+  ],
+  what: [
+    'Both hands flat, palms up, fingers spread, held in front of your torso.',
+    'Twist both wrists slightly outward and upward, raising your eyebrows.',
+  ],
+  when: [
+    'Both index fingers extended.',
+    'Circle the dominant index around the non-dominant index tip, then bring the two tips together to touch.',
+  ],
+  who: [
+    'Dominant index finger extended near your chin.',
+    'Circle the index in a small horizontal loop just in front of your mouth twice.',
+  ],
+  why: [
+    'Tap the side of your forehead with the dominant index finger.',
+    'Drop the hand into a "Y" shape (thumb and pinky out) and shake it lightly.',
+  ],
+  how: [
+    'Both hands: bend the fingers so knuckles face each other, thumbs up.',
+    'Roll both wrists up and out together until both palms face upward — revealing gesture.',
+  ],
+  which: [
+    'Both fists with thumbs pointing up.',
+    'Alternate the two fists up and down in front of you — like weighing options on scales.',
+  ],
+
+  // ── Verbs ──────────────────────────────────────────────────
+  can: [
+    'Both hands closed into fists, thumbs pointing up, held in front of you.',
+    'Drop both fists firmly downward together — short, decisive motion.',
+  ],
+  cannot: [
+    'Both hands: index finger extended on each, held vertically in front of you.',
+    'Tap the dominant index sharply down across the non-dominant index — a clear "block".',
+  ],
+  go: [
+    'Both hands: index fingers extended, pointing forward.',
+    'Move both fingers forward together in the direction of travel.',
+  ],
+  come: [
+    'Open hand, palm facing your chest.',
+    'Beckon by curling the fingers toward your chest twice.',
+  ],
+  give: [
+    'Both hands form flat-O shapes (fingertips bunched, palms up).',
+    'Push them forward from your chest, opening the fingers slightly as the hands extend.',
+  ],
+  take: [
+    'Open hand reaches forward in front of you.',
+    'Curl the fingers into a closed grip as you pull the hand back toward your chest.',
+  ],
+  make: [
+    'Both fists in front of you, knuckles facing each other.',
+    'Twist the dominant fist back and forth against the non-dominant fist — like working clay.',
+  ],
+  read: [
+    'Non-dominant hand flat, palm up — represents the page.',
+    'Dominant hand: index and middle fingers extended (a "V"). Trace down the palm twice.',
+  ],
+  write: [
+    'Non-dominant hand flat, palm up — represents the paper.',
+    'Dominant hand: pinch thumb and index together and mime writing a short line across the palm.',
+  ],
+  learn: [
+    'Non-dominant hand flat, palm up.',
+    'Dominant hand: scoop fingertips up from the palm and bring them to your forehead, closing into a flat-O.',
+  ],
+  understand: [
+    'Closed fist near your temple, thumb tucked, palm facing you.',
+    'Flick the index finger straight up sharply — like a lightbulb switching on.',
+  ],
+  remember: [
+    'Touch the dominant index finger to your forehead.',
+    'Lower the hand and press the dominant thumb tip onto the non-dominant thumb tip — locking it in.',
+  ],
+  forget: [
+    'Open dominant hand at your forehead, palm facing in, fingers spread.',
+    'Sweep it across your forehead and close into a fist as it moves off to the side.',
+  ],
+  know: [
+    'Dominant hand flat, fingers together.',
+    'Tap the fingertips on the side of your forehead twice.',
+  ],
+
+  // ── Feelings (face expression matters here) ────────────────
+  like: [
+    'Dominant hand: middle finger pointing toward your chest, thumb out, other fingers spread.',
+    'Touch the middle finger to your chest, then pull the hand forward closing thumb to middle (the "8" pluck).',
+  ],
+  love: [
+    'Both hands closed into fists.',
+    'Cross the wrists at your chest and press the fists gently against your chest, arms hugging yourself.',
+  ],
+  happy: [
+    'Both flat hands, palms facing your chest.',
+    'Brush both hands upward on your chest in repeated quick strokes, smiling.',
+  ],
+  sad: [
+    'Both open hands at face level, palms facing in, fingers spread.',
+    'Slide both hands down past your face with a slight droop — mirror the expression on your face.',
+  ],
+  angry: [
+    'Both hands in claw shapes (fingers bent, spread) in front of your face or chest.',
+    'Raise the claws upward sharply with a tense expression.',
+  ],
+  excited: [
+    'Both hands: middle finger pointing toward your chest, other fingers spread.',
+    'Alternate the hands brushing upward on your chest rapidly — lively, animated expression.',
+  ],
+  tired: [
+    'Both hands bent at the knuckles, fingertips touching your upper chest.',
+    'Let them drop forward slightly as your shoulders sag — body language carries the meaning.',
+  ],
+  hot: [
+    'Claw hand near your mouth, palm facing in.',
+    'Quickly twist the hand outward and downward, opening the fingers — throwing the heat away.',
+  ],
+  cold: [
+    'Both fists held in front of your chest, elbows tucked into your sides.',
+    'Shake the fists in short, sharp shivers.',
+  ],
+
+  // ── Descriptions ──────────────────────────────────────────
+  good: [
+    'Dominant flat hand starts at your chin, palm facing in.',
+    'Bring the hand forward and down onto the upturned palm of the non-dominant hand (or just forward and down).',
+  ],
+  bad: [
+    'Dominant flat hand starts at your chin, palm facing in.',
+    'Turn the hand palm-down and move it firmly away and downward — the opposite of "good".',
+  ],
+  big: [
+    'Both hands form "L" shapes (thumb and index at 90°), palms facing each other.',
+    'Pull the two Ls apart sideways to indicate the size.',
+  ],
+  small: [
+    'Both flat hands held close together, palms facing each other.',
+    'Move them slightly closer and apart in a small repeated pinching motion.',
+  ],
+  fast: [
+    'Both hands: index fingers extended, pointing forward.',
+    'Snap the dominant index back sharply with a flick of the wrist — quick, sudden motion.',
+  ],
+  slow: [
+    'Non-dominant arm flat, palm down, extended in front of you.',
+    'Slide the dominant flat hand slowly along the top of the non-dominant arm, from wrist toward elbow.',
+  ],
+  easy: [
+    'Non-dominant hand flat, palm up.',
+    'Dominant hand with bent fingertips brushes lightly upward against the non-dominant fingertips twice.',
+  ],
+  difficult: [
+    'Both hands form bent "V"s (index and middle fingers bent at the middle knuckle).',
+    'Strike the knuckles of the bent Vs together a few times in front of you.',
+  ],
+  clean: [
+    'Non-dominant hand flat, palm up.',
+    'Dominant flat palm sweeps cleanly across the non-dominant palm from heel to fingertips.',
+  ],
+  dirty: [
+    'Dominant hand under your chin, palm down, fingers in a loose claw.',
+    'Wiggle the fingers as if grime were dripping off them.',
+  ],
+
+  // ── Time ───────────────────────────────────────────────────
+  today: [
+    'Both hands in "Y" shapes (thumb and pinky out, other fingers curled).',
+    'Drop both Ys down together once in front of you, emphasising the present moment.',
+  ],
+  tomorrow: [
+    'Closed fist with the thumb extended, touching your cheek near the jaw.',
+    'Roll the hand forward off the cheek, ending with the thumb pointing forward — into the future.',
+  ],
+  yesterday: [
+    'Closed fist with the thumb extended, touching your cheek near the jaw.',
+    'Roll the hand backward over your shoulder — into the past.',
+  ],
+  now: [
+    'Both hands: bent "Y" shapes (thumb and pinky out, relaxed), palms up.',
+    'Drop both hands sharply downward together, emphasising "this very moment".',
+  ],
+  later: [
+    'Dominant hand in an "L" shape (thumb and index at 90°), palm facing left.',
+    'Pivot the L forward at the wrist from upright to lying flat — time moving onward.',
+  ],
+  morning: [
+    'Non-dominant forearm held horizontally across your body (the horizon).',
+    'Dominant flat hand, palm up, rises behind the forearm into view — like a sunrise.',
+  ],
+  afternoon: [
+    'Non-dominant forearm horizontal across your body.',
+    'Dominant flat hand rests on top of the non-dominant arm and tilts forward slightly — sun overhead.',
+  ],
+  night: [
+    'Non-dominant forearm horizontal across your body.',
+    'Dominant flat hand drapes over the non-dominant arm with palm down — sun setting behind the horizon.',
+  ],
+  week: [
+    'Non-dominant hand flat, palm up.',
+    'Dominant index finger slides across the non-dominant palm from heel to fingertips in one motion.',
+  ],
+  month: [
+    'Non-dominant index finger pointing straight up.',
+    'Dominant index finger slides downward along the non-dominant index from tip to base.',
+  ],
+
+  // ── Colours ────────────────────────────────────────────────
+  red: [
+    'Dominant index finger extended.',
+    'Brush the fingertip downward across your lips once or twice.',
+  ],
+  blue: [
+    'Form a "B" handshape: fingers together and straight, thumb folded across the palm.',
+    'Shake the B-hand slightly side to side at the wrist in front of you.',
+  ],
+  green: [
+    'Form a "G" handshape (or extend just index and thumb), palm sideways.',
+    'Shake the G-hand slightly side to side — same motion as blue, different handshape.',
+  ],
+  yellow: [
+    'Form a "Y" handshape: thumb and pinky extended, other fingers curled.',
+    'Twist the Y back and forth at the wrist a few times.',
+  ],
+  black: [
+    'Dominant index finger extended.',
+    'Drag the fingertip horizontally across your forehead, from one side to the other.',
+  ],
+  white: [
+    'Open dominant hand on the centre of your chest, fingertips touching the chest.',
+    'Pull the hand forward, closing the fingertips together into a flat-O as it moves away.',
+  ],
+  orange: [
+    'Make a "C" shape near your mouth (or chin).',
+    'Open and close the C a couple of times near the mouth — like squeezing an orange.',
+  ],
+  pink: [
+    'Form a "P" handshape (middle finger drops down, thumb and index splay out).',
+    'Brush the middle finger downward on your lips twice — same area as red, different handshape.',
+  ],
+  brown: [
+    'Form a "B" handshape: fingers together, thumb folded across the palm.',
+    'Slide the B-hand down along your cheek from temple to jawline.',
+  ],
+  purple: [
+    'Form a "P" handshape (middle finger drops down, thumb and index splay).',
+    'Shake the P-hand side to side at the wrist a few times.',
+  ],
+
+  // ── Two-hand live signs that didn't fit other categories ───
+  stop: [
+    'Non-dominant hand flat, palm up in front of your torso.',
+    'Dominant flat hand chops once onto the palm — clear, decisive boundary.',
   ],
 };
 
