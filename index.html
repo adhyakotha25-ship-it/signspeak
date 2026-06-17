@@ -50,7 +50,53 @@
 
   <main class="main-container">
 
-    <!-- LEFT: Camera + Sentence -->
+    <!-- LEFT: Always-visible BSL Guide -->
+    <section class="guide-panel">
+      <div class="panel-card bsl-guide-card">
+        <div class="card-header">
+          <div class="card-header-left">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span class="card-label">BSL Word Guide</span>
+          </div>
+          <span class="bsl-count-badge" id="bsl-count">90 signs</span>
+        </div>
+
+        <div class="bsl-toolbar">
+          <div class="bsl-search-wrap">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input id="bsl-search" class="bsl-search" type="text" placeholder="Search word or category..." autocomplete="off" />
+            <button class="bsl-clear-btn" id="bsl-search-clear" style="display:none;">✕</button>
+          </div>
+          <div class="category-chips" id="category-chips">
+            <button class="cat-chip active" data-cat="">All</button>
+            <button class="cat-chip" data-cat="greetings">Greetings</button>
+            <button class="cat-chip" data-cat="manners">Manners</button>
+            <button class="cat-chip" data-cat="needs">Needs</button>
+            <button class="cat-chip" data-cat="daily life">Daily Life</button>
+            <button class="cat-chip" data-cat="people">People</button>
+            <button class="cat-chip" data-cat="questions">Questions</button>
+            <button class="cat-chip" data-cat="verbs">Verbs</button>
+            <button class="cat-chip" data-cat="feelings">Feelings</button>
+            <button class="cat-chip" data-cat="descriptions">Descriptions</button>
+            <button class="cat-chip" data-cat="time">Time</button>
+            <button class="cat-chip" data-cat="colors">Colours</button>
+          </div>
+          <label class="bsl-live-only">
+            <input type="checkbox" id="bsl-live-only" />
+            <span>Show only live-detected</span>
+          </label>
+        </div>
+
+        <div class="bsl-guide-grid" id="bsl-guide-grid"></div>
+        <div class="bsl-empty" id="bsl-empty" style="display:none;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <p>No signs found. Try a different search or category.</p>
+        </div>
+        <div class="bsl-footer">Tips default to right-hand dominant signing; mirror if you sign left-handed. Animated strip = rough motion hint only.</div>
+      </div>
+    </section>
+
+    <!-- CENTRE: Camera + Sentence -->
     <section class="camera-panel">
       <div class="camera-wrapper">
         <div class="camera-frame" id="camera-frame">
@@ -167,52 +213,6 @@
           <p class="cheat-intro">Each row shows the <strong>zone</strong>, a <strong>motion preview</strong>, and what the detector looks for. Hit the zone, hold the shape, hold steady.</p>
           <div class="cheat-grid" id="cheat-grid"></div>
         </div>
-      </div>
-    </section>
-
-    <!-- MIDDLE: Always-visible BSL Guide (next to the camera) -->
-    <section class="guide-panel">
-      <div class="panel-card bsl-guide-card">
-        <div class="card-header">
-          <div class="card-header-left">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-            <span class="card-label">BSL Word Guide</span>
-          </div>
-          <span class="bsl-count-badge" id="bsl-count">90 signs</span>
-        </div>
-
-        <div class="bsl-toolbar">
-          <div class="bsl-search-wrap">
-            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input id="bsl-search" class="bsl-search" type="text" placeholder="Search word or category..." autocomplete="off" />
-            <button class="bsl-clear-btn" id="bsl-search-clear" style="display:none;">✕</button>
-          </div>
-          <div class="category-chips" id="category-chips">
-            <button class="cat-chip active" data-cat="">All</button>
-            <button class="cat-chip" data-cat="greetings">Greetings</button>
-            <button class="cat-chip" data-cat="manners">Manners</button>
-            <button class="cat-chip" data-cat="needs">Needs</button>
-            <button class="cat-chip" data-cat="daily life">Daily Life</button>
-            <button class="cat-chip" data-cat="people">People</button>
-            <button class="cat-chip" data-cat="questions">Questions</button>
-            <button class="cat-chip" data-cat="verbs">Verbs</button>
-            <button class="cat-chip" data-cat="feelings">Feelings</button>
-            <button class="cat-chip" data-cat="descriptions">Descriptions</button>
-            <button class="cat-chip" data-cat="time">Time</button>
-            <button class="cat-chip" data-cat="colors">Colours</button>
-          </div>
-          <label class="bsl-live-only">
-            <input type="checkbox" id="bsl-live-only" />
-            <span>Show only live-detected</span>
-          </label>
-        </div>
-
-        <div class="bsl-guide-grid" id="bsl-guide-grid"></div>
-        <div class="bsl-empty" id="bsl-empty" style="display:none;">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <p>No signs found. Try a different search or category.</p>
-        </div>
-        <div class="bsl-footer">Tips default to right-hand dominant signing; mirror if you sign left-handed. Animated strip = rough motion hint only.</div>
       </div>
     </section>
 
